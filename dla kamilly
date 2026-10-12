@@ -1,0 +1,643 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Свидание с Ваней</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: a title block, then one phone-shaped messenger. Group chat and Vanya's chat are two threads in the same screen; answer options slide in at the bottom like quick replies. */
+:root {
+  --page: #160f2b;
+  --screen: #f6f1ff;
+  --card: #ffffff;
+  --ink: #2a1b3d;
+  --muted: #7c6a95;
+  --line: #e4dcf3;
+  --kam: #8a5cff;
+  --heart: #ff4f9a;
+  --peach: #ffb089;
+  --font-display: 'Unbounded', 'Trebuchet MS', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: auto; }
+body {
+  background: var(--page);
+  color: #fff0e6;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  padding-inline: 16px;
+  padding-block: 20px 32px;
+}
+.top { max-width: 420px; margin: 0 auto 16px; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.4rem, 5.5vw, 2rem);
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 span { color: var(--heart); }
+.lead { margin: 6px 0 0; color: #c9b3df; font-size: .95rem; }
+
+.phone {
+  position: relative;
+  width: min(100%, 390px);
+  height: 700px;
+  height: clamp(580px, 88svh, 720px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--screen);
+  color: var(--ink);
+  border: 8px solid #0b0618;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+}
+.notch { position: absolute; top: 6px; left: 50%; width: 84px; height: 20px; margin-left: -42px; background: #0b0618; border-radius: 12px; z-index: 5; }
+.status { display: flex; justify-content: space-between; align-items: center; padding: 8px 22px 0; height: 30px; font-size: 12px; font-weight: 800; color: var(--ink); flex: none; }
+.batt { width: 22px; height: 10px; border: 1.5px solid var(--ink); border-radius: 3px; position: relative; }
+.batt::after { content: ''; position: absolute; inset: 1.5px; right: 5px; background: var(--ink); border-radius: 1px; }
+
+.appbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 14px 8px; flex: none; }
+.who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.who .t { min-width: 0; }
+.nm { font-weight: 800; font-size: 16px; line-height: 1.15; }
+.sub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip { flex: none; font: 800 12px var(--font-body); color: var(--kam); background: #ece4ff; border: 0; border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+.chip b { display: inline-block; min-width: 1.4em; margin-left: 4px; padding: 0 5px; border-radius: 99px; background: var(--kam); color: #fff; text-align: center; }
+
+.av { --s: 34px; width: var(--s); height: var(--s); flex: none; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: calc(var(--s) * .4); line-height: 1; }
+.stack { display: flex; }
+.stack .av { border: 2px solid var(--screen); margin-left: -10px; }
+.stack .av:first-child { margin-left: 0; }
+
+.tabs { display: flex; gap: 6px; padding: 0 14px 8px; flex: none; }
+.tab { flex: 1; position: relative; font: 800 13px var(--font-body); color: var(--muted); background: transparent; border: 0; border-bottom: 3px solid var(--line); padding: 7px 4px; cursor: pointer; }
+.tab.on { color: var(--ink); border-bottom-color: var(--kam); }
+.dot { position: absolute; top: 6px; right: 22%; width: 9px; height: 9px; border-radius: 50%; background: var(--heart); }
+
+.meter { position: relative; display: flex; align-items: center; gap: 8px; padding: 0 14px 8px; flex: none; }
+.meter svg { width: 20px; height: 20px; fill: var(--heart); flex: none; }
+.meter .lab { font-size: 12px; font-weight: 800; color: var(--muted); flex: none; }
+.bar { flex: 1; height: 10px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.fill { height: 100%; width: 30%; border-radius: 99px; background: linear-gradient(90deg, #ff7fb8, var(--heart)); transition: width .7s ease; }
+.val { width: 2.2em; text-align: right; font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; }
+.pop { position: absolute; right: 14px; top: -14px; font-weight: 800; font-size: 18px; animation: rise 1.4s ease forwards; pointer-events: none; }
+.pop.up { color: #0f9a68; }
+.pop.down { color: #d6307a; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } 20% { opacity: 1; } to { opacity: 0; transform: translateY(-14px); } }
+
+.threads { position: relative; flex: 1; min-height: 0; display: flex; background: #efe8fc; border-top: 1px solid var(--line); }
+.thread { flex: 1; min-width: 0; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.day { align-self: center; font-size: 11px; font-weight: 800; color: var(--muted); background: #e4dcf3; border-radius: 99px; padding: 2px 10px; }
+.msg { display: flex; gap: 8px; align-items: flex-end; animation: pop .18s ease; }
+.msg.out { justify-content: flex-end; }
+.col { display: flex; flex-direction: column; gap: 2px; min-width: 0; max-width: 78%; }
+.msg.out .col { max-width: 80%; }
+.lbl { font-size: 11px; font-weight: 800; padding-left: 4px; }
+.b { padding: 9px 13px; border-radius: 18px; font-size: 15px; line-height: 1.35; overflow-wrap: anywhere; background: var(--card); color: var(--ink); border-bottom-left-radius: 6px; box-shadow: 0 1px 0 rgba(42, 27, 61, .06); }
+.msg.out .b { background: var(--kam); color: #fff; border-bottom-left-radius: 18px; border-bottom-right-radius: 6px; }
+.typing .b { display: flex; gap: 4px; padding: 13px 14px; }
+.typing .b i { width: 7px; height: 7px; border-radius: 50%; background: #b3a4cc; animation: bob 1s infinite; }
+.typing .b i:nth-child(2) { animation-delay: .15s; }
+.typing .b i:nth-child(3) { animation-delay: .3s; }
+@keyframes bob { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.toast { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 12px; font-weight: 800; padding: 6px 14px; border-radius: 99px; z-index: 3; white-space: nowrap; animation: pop .2s ease; }
+.sheet { position: absolute; inset: 0; z-index: 4; background: var(--screen); padding: 16px; overflow-y: auto; }
+.sheet h2 { font-family: var(--font-display); font-weight: 600; font-size: 1rem; margin: 0 0 10px; }
+.sheet ul { margin: 0 0 14px; padding-left: 20px; }
+.sheet li { margin-bottom: 6px; }
+.sheet p { margin: 0 0 12px; color: var(--muted); }
+
+.reply { flex: none; background: var(--card); border-top: 1px solid var(--line); padding: 10px 12px 14px; display: flex; flex-direction: column; gap: 8px; max-height: 58%; overflow-y: auto; }
+.rhead { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 800; color: var(--muted); }
+.rhead .rq { color: var(--ink); text-align: right; }
+.opt { display: flex; align-items: flex-start; gap: 10px; text-align: left; width: 100%; font-family: var(--font-body); color: var(--ink); background: #faf7ff; border: 2px solid var(--c, var(--line)); border-radius: 14px; padding: 8px 10px; cursor: pointer; }
+.opt:hover:not(:disabled) { background: #f0e8ff; }
+.opt:disabled { opacity: .6; cursor: default; }
+.ot { display: flex; flex-direction: column; min-width: 0; }
+.who2 { font-size: 11px; font-weight: 800; color: var(--cl, var(--muted)); }
+.say { font-size: 14px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.btn { font: 800 15px var(--font-body); color: #fff; background: var(--kam); border: 0; border-radius: 999px; padding: 11px 22px; cursor: pointer; }
+.btn.alt { color: var(--kam); background: #ece4ff; }
+.btn:hover { filter: brightness(1.06); }
+.btn:focus-visible, .opt:focus-visible, .tab:focus-visible, .chip:focus-visible { outline: 3px solid var(--heart); outline-offset: 2px; }
+
+.card { position: absolute; inset: 0; z-index: 6; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 44px 24px 24px; background: linear-gradient(165deg, #3b1f63, #7a2f7e 60%, #ff7a8a); color: #fff0e6; }
+.card h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.4rem, 7vw, 1.9rem); line-height: 1.12; margin: 0; text-wrap: balance; }
+.card p { margin: 0; font-size: 1rem; }
+.card .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.card .score { font-weight: 800; color: var(--peach); }
+.card .btn { background: #fff0e6; color: #3b1f63; }
+.card .btn.alt { background: rgba(255, 255, 255, .16); color: #fff0e6; }
+.faces { display: flex; }
+.faces .av { --s: 44px; margin-left: -8px; border: 3px solid #5a2a78; }
+.faces .av:first-child { margin-left: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .msg, .toast, .typing .b i, .pop { animation: none; }
+  .fill { transition: none; }
+}
+</style>
+
+<div class="top">
+  <h1>Свидание <span>с Ваней</span></h1>
+  <p class="lead">Ты Камилла. Слушай подруг, выбирай ответы и постарайся, чтобы Ваня сам захотел на свидание.</p>
+</div>
+
+<div class="phone" id="phone">
+  <div class="notch"></div>
+  <div class="status"><span>21:07</span><span class="batt" aria-hidden="true"></span></div>
+
+  <header class="appbar">
+    <div class="who">
+      <div id="barAv"></div>
+      <div class="t"><div class="nm" id="barName"></div><div class="sub" id="barSub"></div></div>
+    </div>
+    <button class="chip" id="dossierBtn" type="button">Досье<b id="factCount">0</b></button>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" id="tabGroup" type="button" role="tab" aria-selected="true">Подружки<i class="dot" id="dotGroup" hidden></i></button>
+    <button class="tab" id="tabVanya" type="button" role="tab" aria-selected="false">Ваня<i class="dot" id="dotVanya" hidden></i></button>
+  </div>
+
+  <div class="meter">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    <span class="lab">Симпатия Вани</span>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="30" id="bar"><div class="fill" id="fill"></div></div>
+    <span class="val" id="val">30</span>
+  </div>
+
+  <div class="threads">
+    <div class="thread" id="thGroup" role="log" aria-live="polite"></div>
+    <div class="thread" id="thVanya" role="log" aria-live="polite" hidden></div>
+    <div class="sheet" id="sheet" hidden></div>
+  </div>
+
+  <div class="reply" id="reply" hidden></div>
+
+  <div class="card" id="startCard">
+    <div class="faces" id="faces"></div>
+    <h2>Свидание с Ваней</h2>
+    <p>Камилла, телефон, три лучшие подруги и один шанс. Читай, что говорят подруги: подсказки о Ване спрятаны в разговорах, а советы бывают разными.</p>
+    <div class="row"><button class="btn" id="startBtn" type="button">Открыть чат</button></div>
+  </div>
+
+  <div class="card" id="endCard" hidden>
+    <h2 id="endTitle"></h2>
+    <p id="endText"></p>
+    <p class="score" id="endScore"></p>
+    <div class="row">
+      <button class="btn" id="againBtn" type="button">Сыграть ещё раз</button>
+      <button class="btn alt" id="viewBtn" type="button">Посмотреть чат</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+  var P = {
+    kam: { name: 'Камилла', bg: '#8a5cff', fg: '#ffffff', lab: '#6a3fe0', ini: 'К' },
+    ari: { name: 'Арина', bg: '#2fbf8f', fg: '#10281f', lab: '#12805d', ini: 'А' },
+    ksu: { name: 'Ксюша', bg: '#ff6fa8', fg: '#3a0f24', lab: '#d6307a', ini: 'Кс' },
+    pol: { name: 'Полина', bg: '#3f8cff', fg: '#ffffff', lab: '#2262d0', ini: 'П' },
+    van: { name: 'Ваня', bg: '#ff9a3c', fg: '#3a1d05', lab: '#c46a12', ini: 'В' }
+  };
+
+  function avatar(who, size) {
+    var a = el('div', 'av', P[who].ini);
+    a.style.background = P[who].bg;
+    a.style.color = P[who].fg;
+    a.style.setProperty('--s', size + 'px');
+    return a;
+  }
+
+  /* ---------- сценарий ---------- */
+  var ROUNDS = [
+    {
+      title: 'Первое сообщение',
+      prompt: 'Что написать Ване первым?',
+      intro: [
+        { th: 'group', who: 'kam', text: 'Девочки, помогите. Я хочу позвать Ваню на свидание, но не знаю, с чего начать' },
+        { th: 'group', who: 'ari', text: 'Наконец-то! Я уже думала, ты вечно будешь вздыхать над его аватаркой' },
+        { th: 'group', who: 'ksu', text: 'Она там полчаса на неё смотрела, я свидетель' },
+        { th: 'group', who: 'pol', text: 'Давайте по делу. Я смотрела его сторис: там кот Борис и ракета на фоне неба.', facts: ['Любит космос', 'Есть кот по имени Борис'] },
+        { th: 'group', who: 'ksu', text: 'А ещё он писал, что обожает фисташковое мороженое. Странный вкус, но факт.', facts: ['Обожает фисташковое мороженое'] },
+        { th: 'group', who: 'ari', text: 'И не любит громких жестов на публику. Так что без сюрпризов на весь район.', facts: ['Не любит громких жестов на публику'] },
+        { th: 'group', who: 'pol', text: 'Итого: космос, кот, фисташки и никакого шума. Запомни, Камилла. Теперь пиши ему.' }
+      ],
+      choiceTh: 'group',
+      options: [
+        { by: 'ksu', out: 'Привет! Твой Борис самый пушистый кот в галактике 🐱🚀', delta: 15,
+          vanya: ['Привет!) Спасибо, Борис теперь будет задирать нос', 'А я тут смотрю фильм про космонавтов, уже в третий раз'],
+          react: { who: 'ksu', text: 'Идеально! Он в восторге, я это чувствую.' } },
+        { by: 'ari', out: 'Привет, Вань. Надо поговорить. Ты свободен?', delta: -6,
+          vanya: ['Привет... что-то случилось?', 'Ладно, не пугай так) Я тут просто смотрю фильм про космонавтов, уже в третий раз'],
+          react: { who: 'ari', text: 'Хотела интригу. Ну, исправляемся!' } },
+        { by: 'pol', out: 'Привет! Как дела? Что нового?', delta: 5,
+          vanya: ['Привет! Нормально. А у тебя?', 'Смотрю фильм про космонавтов, уже в третий раз'],
+          react: { who: 'pol', text: 'Спокойно и вежливо. Надёжный старт.' } }
+      ]
+    },
+    {
+      title: 'Разговор о фильме',
+      prompt: 'Поддержи разговор о фильме',
+      intro: [],
+      choiceTh: 'group',
+      options: [
+        { by: 'ksu', out: 'А ты сам полетел бы в космос? Только честно. И Борис летит с тобой?', delta: 15,
+          vanya: ['Полетел бы без раздумий! Борис, думаю, тоже согласен 😄', 'Ты первая, кто спросил про Бориса. Мне нравится, как ты думаешь'],
+          react: { who: 'ksu', text: 'Видишь, юмор работает!' } },
+        { by: 'pol', out: 'Круто! А чем он заканчивается? Нет, не говори, я потом сама посмотрю', delta: 10,
+          vanya: ['Хорошо, молчу) Но там такой финал, что ты точно захочешь его обсудить', 'Скажешь потом, как тебе?'],
+          react: { who: 'pol', text: 'Он уже ждёт твоего мнения. Хороший ход.' } },
+        { by: 'ari', out: 'Космос это скучно. Давай лучше про футбол', delta: -10,
+          vanya: ['Эм, ну... не всем нравится', 'Я футбол смотрю редко, если честно'],
+          react: { who: 'ari', text: 'Ой. Это я не подумала. Запомним: космос святое.' } }
+      ]
+    },
+    {
+      title: 'Привлечь внимание',
+      prompt: 'Что выложишь в историю?',
+      intro: [
+        { th: 'group', who: 'ksu', text: 'Теперь привлекаем внимание! Выложи сторис, он их точно смотрит' },
+        { th: 'group', who: 'ari', text: 'Только не переборщи' },
+        { th: 'group', who: 'pol', text: 'Выбирай, что будет в кадре' }
+      ],
+      choiceTh: 'group',
+      prefix: '📷 История: ',
+      options: [
+        { by: 'pol', out: 'ночное небо над крышами. Подпись: «Сегодня видно звёзды»', delta: 15,
+          vanya: ['Ого, это у тебя из окна? Красиво!', 'Я как раз хотел спросить, что там за яркая звезда. Ты видела?'],
+          react: { who: 'pol', text: 'Он заметил. Он заметил!' } },
+        { by: 'ksu', out: 'пончик с глазами. Подпись: «Мой план на вечер»', delta: 6,
+          vanya: ['Ха, пончик с глазами 😂 ты смешная'],
+          react: { who: 'ksu', text: 'Смешно же! Хотя про космос было бы лучше.' } },
+        { by: 'ari', out: 'селфи. Подпись: «Кто оценит, тот молодец»', delta: -6,
+          vanya: ['Эм, привет) нормально выглядит', 'Но подпись немного странная'],
+          react: { who: 'ari', text: 'Ладно, перегнула. Но уверенность это здорово!' } }
+      ]
+    },
+    {
+      title: 'Про мороженое',
+      prompt: 'Что ответишь про мороженое?',
+      intro: [
+        { th: 'vanya', who: 'van', text: 'Слушай, а ты любишь мороженое? Я вот фисташковое готов есть в любую погоду' }
+      ],
+      choiceTh: 'vanya',
+      options: [
+        { by: 'pol', out: 'Люблю! Но фисташковое ещё не пробовала. Ты убедишь меня?', delta: 15,
+          vanya: ['Принято! Расскажу, почему это лучший вкус', 'Фисташковое это почти как космос на языке. Ну, почти 😄'],
+          react: { who: 'pol', text: 'Мягко и с интересом. Очень красиво.' } },
+        { by: 'ksu', out: 'Люблю, особенно тройную порцию с шариками! Фисташковое тоже возьму', delta: 8,
+          vanya: ['Тройная порция это сильно)', 'Тогда тебе надо попробовать одно место на углу'],
+          react: { who: 'ksu', text: 'Тройная порция это главное. Я права!' } },
+        { by: 'ari', out: 'Фисташковое это странно. Шоколадное лучше', delta: -3,
+          vanya: ['Каждому своё)', 'Но ты, наверное, просто не пробовала нормальное'],
+          react: { who: 'ari', text: 'Я просто честно сказала. В следующий раз смягчу.' } }
+      ]
+    },
+    {
+      title: 'Намёк на встречу',
+      prompt: 'Как намекнуть, что хочешь пойти?',
+      intro: [
+        { th: 'vanya', who: 'van', text: 'В субботу открывается новый планетарий. Давно хотел сходить' }
+      ],
+      choiceTh: 'vanya',
+      options: [
+        { by: 'pol', out: 'Планетарий звучит волшебно. Я бы с радостью посмотрела на звёздное небо', delta: 12,
+          vanya: ['Правда? Я думал, это интересно только мне)', 'Надо будет потом рассказать друг другу, как там'],
+          react: { who: 'pol', text: 'Он ловит намёки. Ещё один шаг.' } },
+        { by: 'ari', out: 'Классно! Возьмёшь меня с собой?', delta: 10,
+          vanya: ['Ого, прямо так? 😄', 'Ну... я не против, наверное. Давай обсудим'],
+          react: { who: 'ari', text: 'Смело! Мне нравится.' } },
+        { by: 'ksu', out: 'Только не забудь взять скафандр. Там холодно', delta: 5,
+          vanya: ['Скафандр уже в шкафу 😄', 'Если серьёзно, это было бы классно'],
+          react: { who: 'ksu', text: 'Шутка засчитана, но намёк был мягкий.' } }
+      ]
+    },
+    {
+      title: 'Пригласить на свидание',
+      prompt: 'Как пригласить Ваню?',
+      intro: [
+        { th: 'group', who: 'ari', text: 'Всё, Камилла, момент истины' },
+        { th: 'group', who: 'ksu', text: 'Приглашай!' },
+        { th: 'group', who: 'pol', text: 'Спокойно, у тебя получится. Главное искренне.' }
+      ],
+      choiceTh: 'group',
+      final: true,
+      options: [
+        { by: 'ari', out: 'Давай сходим вместе в планетарий в субботу? Я угощаю мороженым', delta: 10 },
+        { by: 'pol', out: 'Мне было бы приятно провести эту субботу с тобой. Пойдём в планетарий?', delta: 12 },
+        { by: 'ksu', out: 'Ваня, пойдёшь со мной в планетарий? Борис нас обязательно отпустит', delta: 10 }
+      ]
+    }
+  ];
+
+  var ENDINGS = {
+    great: {
+      title: 'Свидание назначено!',
+      text: 'Суббота, планетарий и фисташковое мороженое. Подруги в восторге, а Ваня улыбается даже в чате.',
+      vanya: ['Да! Очень хочу 😊', 'В субботу в три у входа? А потом идём за фисташковым мороженым', 'Борис остаётся дома, он обещал не обижаться'],
+      react: [
+        { who: 'ari', text: 'Вот это да! Свидание в планетарии, я в шоке!' },
+        { who: 'ksu', text: 'Я кричу в подушку, чтобы соседи не слышали' },
+        { who: 'pol', text: 'Мы так рады за тебя, Камилла. Потом расскажешь всё подробно' }
+      ]
+    },
+    ok: {
+      title: 'Почти получилось',
+      text: 'Ваня не отказал и хочет сходить, осталось договориться о дне. Попробуй ещё раз и прислушайся к подсказкам подруг.',
+      vanya: ['Звучит классно! В субботу я пока не уверен, у меня дела', 'Давай созвонимся в пятницу? Очень хочу сходить'],
+      react: [
+        { who: 'pol', text: 'Это почти да. Он правда хочет сходить, просто занят' },
+        { who: 'ari', text: 'В пятницу созвонитесь, и всё решится' },
+        { who: 'ksu', text: 'Главное, что не отказал. Мы в тебя верим' }
+      ]
+    },
+    soft: {
+      title: 'Пока просто друзья',
+      text: 'Ваня готов общаться дальше, но не торопится. С подсказками подруг в следующий раз выйдет лучше.',
+      vanya: ['Спасибо, что позвала. Я пока не готов к свиданию', 'Но давай ещё поболтаем, мне с тобой интересно'],
+      react: [
+        { who: 'ari', text: 'Он не сказал нет. Он сказал: узнаем друг друга лучше' },
+        { who: 'pol', text: 'Это тоже хороший знак. Просто нужен ещё один шаг' },
+        { who: 'ksu', text: 'Давай сыграем ещё раз и поймаем волну!' }
+      ]
+    }
+  };
+
+  /* ---------- состояние и интерфейс ---------- */
+  var TH = { group: $('thGroup'), vanya: $('thVanya') };
+  var DOT = { group: $('dotGroup'), vanya: $('dotVanya') };
+  var G = { score: 30, facts: [], active: 'group' };
+  var RUN = 0;
+  var best = 0;
+  try { best = parseInt(localStorage.getItem('vanya-best') || '0', 10) || 0; } catch (e) {}
+
+  function wait(r, ms) {
+    return new Promise(function (res) { setTimeout(res, ms); }).then(function () { if (r !== RUN) throw new Error('aborted'); });
+  }
+
+  function setBar(name) {
+    var av = $('barAv');
+    av.textContent = '';
+    if (name === 'group') {
+      var st = el('div', 'stack');
+      ['ari', 'ksu', 'pol'].forEach(function (w) { st.appendChild(avatar(w, 34)); });
+      av.appendChild(st);
+      $('barName').textContent = 'Подружки';
+      $('barSub').textContent = 'Арина, Ксюша, Полина и ты';
+    } else {
+      av.appendChild(avatar('van', 34));
+      $('barName').textContent = 'Ваня';
+      $('barSub').textContent = 'в сети';
+    }
+  }
+
+  function scrollDown(th) { th.scrollTop = th.scrollHeight; }
+
+  function setActive(name) {
+    G.active = name;
+    TH.group.hidden = name !== 'group';
+    TH.vanya.hidden = name !== 'vanya';
+    $('tabGroup').classList.toggle('on', name === 'group');
+    $('tabVanya').classList.toggle('on', name === 'vanya');
+    $('tabGroup').setAttribute('aria-selected', name === 'group' ? 'true' : 'false');
+    $('tabVanya').setAttribute('aria-selected', name === 'vanya' ? 'true' : 'false');
+    DOT[name].hidden = true;
+    $('sheet').hidden = true;
+    setBar(name);
+    scrollDown(TH[name]);
+  }
+
+  function bubble(who, text, thread) {
+    var row = el('div', 'msg ' + (who === 'kam' ? 'out' : 'in'));
+    if (who !== 'kam') row.appendChild(avatar(who, 30));
+    var col = el('div', 'col');
+    if (who !== 'kam' && thread === 'group') {
+      var l = el('span', 'lbl', P[who].name);
+      l.style.color = P[who].lab;
+      col.appendChild(l);
+    }
+    col.appendChild(el('div', 'b', text));
+    row.appendChild(col);
+    return row;
+  }
+
+  function typingEl(who) {
+    var row = el('div', 'msg in typing');
+    row.appendChild(avatar(who, 30));
+    var b = el('div', 'b');
+    b.appendChild(el('i')); b.appendChild(el('i')); b.appendChild(el('i'));
+    var col = el('div', 'col'); col.appendChild(b);
+    row.appendChild(col);
+    return row;
+  }
+
+  async function say(r, thread, who, text) {
+    var th = TH[thread];
+    if (who !== 'kam') {
+      var tp = typingEl(who);
+      th.appendChild(tp);
+      scrollDown(th);
+      await wait(r, clamp(450 + text.length * 14, 650, 1300));
+      tp.remove();
+    } else {
+      await wait(r, 450);
+    }
+    th.appendChild(bubble(who, text, thread));
+    scrollDown(th);
+    if (G.active !== thread) DOT[thread].hidden = false;
+  }
+
+  function setMeter(v) {
+    $('fill').style.width = v + '%';
+    $('val').textContent = String(v);
+    $('bar').setAttribute('aria-valuenow', String(v));
+  }
+  function applyDelta(d) {
+    G.score = clamp(G.score + d, 0, 100);
+    setMeter(G.score);
+    var pop = el('span', 'pop ' + (d >= 0 ? 'up' : 'down'), (d >= 0 ? '+' : '') + d);
+    document.querySelector('.meter').appendChild(pop);
+    setTimeout(function () { pop.remove(); }, 1500);
+  }
+
+  function toast(text) {
+    var t = el('div', 'toast', text);
+    document.querySelector('.threads').appendChild(t);
+    setTimeout(function () { t.remove(); }, 2200);
+  }
+  function addFact(f) {
+    if (G.facts.indexOf(f) !== -1) return;
+    G.facts.push(f);
+    $('factCount').textContent = String(G.facts.length);
+    toast('Новая заметка в досье');
+  }
+  function renderSheet() {
+    var s = $('sheet');
+    s.textContent = '';
+    s.appendChild(el('h2', null, 'Досье на Ваню'));
+    if (!G.facts.length) {
+      s.appendChild(el('p', null, 'Пока пусто. Слушай подруг: они знают о Ване больше всех.'));
+    } else {
+      var ul = el('ul');
+      G.facts.forEach(function (f) { ul.appendChild(el('li', null, f)); });
+      s.appendChild(ul);
+    }
+    var b = el('button', 'btn alt', 'Закрыть');
+    b.type = 'button';
+    b.addEventListener('click', function () { s.hidden = true; });
+    s.appendChild(b);
+  }
+
+  function choose(r, R, idx) {
+    return new Promise(function (resolve) {
+      var rp = $('reply');
+      rp.hidden = false;
+      rp.textContent = '';
+      var head = el('div', 'rhead');
+      head.appendChild(el('span', null, 'Раунд ' + (idx + 1) + ' из ' + ROUNDS.length));
+      head.appendChild(el('span', 'rq', R.prompt));
+      rp.appendChild(head);
+      var btns = [];
+      shuffle(R.options.slice()).forEach(function (o) {
+        var b = el('button', 'opt');
+        b.type = 'button';
+        b.style.setProperty('--c', P[o.by].bg);
+        b.style.setProperty('--cl', P[o.by].lab);
+        b.appendChild(avatar(o.by, 28));
+        var tx = el('span', 'ot');
+        tx.appendChild(el('span', 'who2', P[o.by].name + ' советует'));
+        tx.appendChild(el('span', 'say', (R.prefix || '') + o.out));
+        b.appendChild(tx);
+        b.addEventListener('click', function () {
+          if (r !== RUN) return;
+          btns.forEach(function (x) { x.disabled = true; });
+          rp.hidden = true;
+          resolve(o);
+        });
+        btns.push(b);
+        rp.appendChild(b);
+      });
+    });
+  }
+
+  function clearThreads() {
+    TH.group.textContent = '';
+    TH.vanya.textContent = '';
+    TH.group.appendChild(el('div', 'day', 'Сегодня'));
+    TH.vanya.appendChild(el('div', 'day', 'Сегодня'));
+  }
+
+  async function playGame(r) {
+    try {
+      for (var i = 0; i < ROUNDS.length; i++) {
+        var R = ROUNDS[i], k, m;
+        for (k = 0; k < R.intro.length; k++) {
+          m = R.intro[k];
+          setActive(m.th);
+          await say(r, m.th, m.who, m.text);
+          if (m.facts) m.facts.forEach(addFact);
+          if (m.facts) renderSheet();
+        }
+        await wait(r, 300);
+        setActive(R.choiceTh);
+        var opt = await choose(r, R, i);
+
+        setActive('vanya');
+        await say(r, 'vanya', 'kam', (R.prefix || '') + opt.out);
+
+        var replies = opt.vanya, reacts = opt.react ? [opt.react] : [];
+        if (R.final) {
+          var total = clamp(G.score + opt.delta, 0, 100);
+          var key = total >= 80 ? 'great' : (total >= 55 ? 'ok' : 'soft');
+          G.ending = key;
+          replies = ENDINGS[key].vanya;
+          reacts = ENDINGS[key].react;
+        }
+        for (k = 0; k < replies.length; k++) await say(r, 'vanya', 'van', replies[k]);
+        applyDelta(opt.delta);
+        await wait(r, 900);
+        setActive('group');
+        for (k = 0; k < reacts.length; k++) await say(r, 'group', reacts[k].who, reacts[k].text);
+        await wait(r, 500);
+      }
+      finish(r);
+    } catch (e) {
+      if (!e || e.message !== 'aborted') throw e;
+    }
+  }
+
+  function finish(r) {
+    var E = ENDINGS[G.ending];
+    var isBest = G.score > best;
+    if (isBest) {
+      best = G.score;
+      try { localStorage.setItem('vanya-best', String(best)); } catch (e) {}
+    }
+    $('endTitle').textContent = E.title;
+    $('endText').textContent = E.text;
+    $('endScore').textContent = 'Симпатия Вани: ' + G.score + ' из 100' + (isBest ? '. Новый личный рекорд!' : '. Лучший результат: ' + best + '.');
+    setTimeout(function () { if (r === RUN) $('endCard').hidden = false; }, 700);
+    var rp = $('reply');
+    rp.hidden = false;
+    rp.textContent = '';
+    var b = el('button', 'btn', 'Сыграть ещё раз');
+    b.type = 'button';
+    b.addEventListener('click', startGame);
+    rp.appendChild(b);
+  }
+
+  function startGame() {
+    RUN++;
+    var r = RUN;
+    G.score = 30;
+    G.facts = [];
+    G.ending = null;
+    $('factCount').textContent = '0';
+    setMeter(30);
+    $('startCard').hidden = true;
+    $('endCard').hidden = true;
+    $('reply').hidden = true;
+    clearThreads();
+    renderSheet();
+    setActive('group');
+    playGame(r);
+  }
+
+  /* ---------- события ---------- */
+  var faces = $('faces');
+  ['kam', 'ari', 'ksu', 'pol'].forEach(function (w) { faces.appendChild(avatar(w, 44)); });
+  $('startBtn').addEventListener('click', startGame);
+  $('againBtn').addEventListener('click', startGame);
+  $('viewBtn').addEventListener('click', function () { $('endCard').hidden = true; });
+  $('tabGroup').addEventListener('click', function () { setActive('group'); });
+  $('tabVanya').addEventListener('click', function () { setActive('vanya'); });
+  $('dossierBtn').addEventListener('click', function () {
+    renderSheet();
+    $('sheet').hidden = !$('sheet').hidden;
+  });
+
+  clearThreads();
+  renderSheet();
+  setBar('group');
+  setMeter(30);
+})();
+</script>
+
+</body></html>
